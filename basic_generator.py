@@ -87,9 +87,12 @@ if __name__ == '__main__':
                         help='Path to directory with source data for simulation')
     parser.add_argument('--path-to-test-file', dest='test_file_path', type=str, required=True,
                         help='Path to test file with temperatures data')
+    parser.add_argument('--output-file-name', dest='output_file_name', type=str, required=False,
+                        help='Name of file which will be used to save csv output with temperatures')
 
     args = parser.parse_args()
     data_path = args.data_path
+    out_file = args.output_file_name
     test_file_path = args.test_file_path
     if not isdir(data_path) or not exists(test_file_path):
         print("Invalid parameters, check all values")
@@ -116,6 +119,11 @@ if __name__ == '__main__':
                                                             energy_balance=current_row['bilans_ciepla_wych_minus_wch']))
 
     merged['temp_estymowana'] = estimated_temperatures
+
+    if out_file:
+        print(f"Zapis danych wyjściowych do pliku {out_file}")
+        result = merged[['czas', 'temp_estymowana']]
+        result.to_csv(out_file, index=False)
 
     proper_temperatures_df = load_temperatures_file(test_file_path)
 
